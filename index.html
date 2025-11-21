@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pulse Engine6.0 — Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* ========================== BASE ========================== */
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:"Poppins",sans-serif;background:#0b0b14;color:#fff;overflow:hidden;}
+:root{
+  --accent-1:#6c3eff;
+  --accent-2:#9e76ff;
+  --glass:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.12);
+  --text-light:#c9c6f8;
+}
+
+/* ========================== LIVE BACKGROUND ========================== */
+body::before{
+  content:"";position:fixed;inset:0;
+  background:linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px),
+             linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:80px 80px; z-index:0;
+}
+body::after{
+  content:"";position:fixed;inset:0;
+  background:radial-gradient(circle at 30% 40%,rgba(108,62,255,0.12),transparent 60%),
+             radial-gradient(circle at 70% 70%,rgba(158,118,255,0.08),transparent 60%);
+  filter:blur(100px); animation:ambient 12s ease-in-out infinite alternate; z-index:1;
+}
+@keyframes ambient{
+  0%{transform:scale(1) translate(0,0);}
+  100%{transform:scale(1.05) translate(-3%,2%);}
+}
+
+/* ========================== SIGNUP CONTAINER ========================== */
+.container{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:420px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  padding:32px;
+  border-radius:20px;
+  box-shadow:0 12px 40px rgba(108,62,255,0.25);
+  z-index:5;
+  transition:all 0.3s ease;
+}
+.container:hover{
+  box-shadow:0 16px 50px rgba(108,62,255,0.45);
+}
+
+.logo{font-weight:800;margin-bottom:16px;font-size:24px;color:var(--accent-1);}
+h1{font-size:20px;margin-bottom:10px;color:var(--text-light);}
+p.lead{font-size:13px;color:rgba(201,198,248,0.8);margin-bottom:18px;}
+
+/* ========================== INPUTS ========================== */
+.input{
+  width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.04);
+  color:#fff;
+  margin-bottom:12px;
+  outline:none;
+  transition:all 0.3s ease;
+}
+.input:hover{background:rgba(255,255,255,0.08);}
+.input:focus{
+  border-color:#6c3eff;
+  background:rgba(108,62,255,0.12);
+  box-shadow:0 0 10px rgba(108,62,255,0.4);
+}
+
+/* ========================== BUTTONS ========================== */
+.btn{
+  display:inline-block;padding:12px 18px;font-weight:700;border-radius:14px;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);
+  color:#fff;cursor:pointer;
+  backdrop-filter:blur(12px);
+  transition:all 0.3s ease;
+}
+.btn:hover{
+  background:rgba(108,62,255,0.25);
+  border-color:rgba(108,62,255,0.6);
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(108,62,255,0.35);
+}
+
+.link-btn{
+  background:transparent;border:1px solid rgba(255,255,255,0.08);padding:10px 14px;
+  border-radius:12px;color:var(--text-light);cursor:pointer;transition:all 0.3s ease;
+}
+.link-btn:hover{
+  background:rgba(108,62,255,0.2);border-color:var(--accent-1);
+}
+
+.small{font-size:12px;color:var(--text-light);margin-top:10px;}
+.error{color:#ff8b8b;margin-bottom:8px;font-size:13px;display:none;}
+</style>
+</head>
+<body>
+
+<div class="container" role="main" aria-labelledby="signup-title">
+  <div class="logo">The Club — Sign Up</div>
+  <h1 id="signup-title">Create your account</h1>
+  <p class="lead">Fast sign-up. Your profile panel will appear on the dashboard after approval.</p>
+  <div id="error" class="error"></div>
+  <input id="username" class="input" placeholder="Username" autocomplete="username">
+  <input id="email" class="input" placeholder="Email" type="email" autocomplete="email">
+  <input id="password" class="input" placeholder="Password" type="password" autocomplete="new-password">
+  <input id="confirm" class="input" placeholder="Confirm password" type="password" autocomplete="new-password">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+    <button id="submit" class="btn">Sign Up</button>
+  </div>
+  <div class="small">By signing up you accept the terms and conditions</div>
+</div>
+
+<script>
+// =================== DISABLE RIGHT CLICK & DEV TOOLS ===================
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', function(e) {
+    if(e.key === 'F12') e.preventDefault();
+    if(e.ctrlKey && e.shiftKey && ['I','J','C','K'].includes(e.key.toUpperCase())) e.preventDefault();
+    if(e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
+});
+history.pushState(null, null, location.href);
+window.onpopstate = () => history.go(1);
+document.addEventListener('selectstart', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('dragstart', e => e.preventDefault());
+</script>
+
+<script>
+// ===== SIGNUP REQUEST LOGIC =====
+function getRequests(){
+  try { return JSON.parse(localStorage.getItem('pulseSignupRequests')||'[]'); }
+  catch(e){ return []; }
+}
+
+function saveRequests(requests){
+  localStorage.setItem('pulseSignupRequests', JSON.stringify(requests));
+}
+
+document.getElementById('submit').addEventListener('click', function(){
+  const err = document.getElementById('error'); err.style.display='none'; err.innerText='';
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirm').value;
+
+  if(!username||!email||!password||!confirm){ err.innerText='All fields are required.'; err.style.display='block'; return; }
+  if(password!==confirm){ err.innerText='Passwords do not match.'; err.style.display='block'; return; }
+  if(username.length<3){ err.innerText='Username must be at least 3 characters.'; err.style.display='block'; return; }
+
+  // Add request as pending
+  const requests = getRequests();
+  requests.push({
+    username,
+    email,
+    password, // optionally hash with CryptoJS.SHA256(password).toString()
+    status: 'pending',
+    requestedAt: new Date().toISOString()
+  });
+  saveRequests(requests);
+
+  err.style.color = '#00ffdd';
+  err.innerText = 'Signup request sent! Await admin approval.';
+  err.style.display = 'block';
+
+  document.getElementById('username').value='';
+  document.getElementById('email').value='';
+  document.getElementById('password').value='';
+  document.getElementById('confirm').value='';
+});
+
+// submit on Enter
+['username','email','password','confirm'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ document.getElementById('submit').click(); }
+  });
+});
+</script>
+</body>
+</html>
